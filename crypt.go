@@ -245,8 +245,10 @@ const (
 *Function used to load in all the data on launch
  */
 func loadFunction() {
+
 	//Loop resetting, break if enough time has passed & reset variable
 	for {
+
 		//Get time passed from latest reload
 		timePassed := time.Now().Sub(latestReload)
 
@@ -255,6 +257,7 @@ func loadFunction() {
 			//Reset Latest reload
 			latestReload = time.Now()
 			loadAllCryptoStatus()
+			displayFunction()
 		}
 	}
 }
@@ -289,22 +292,15 @@ DISPLAY
 *Function used to display in the terminal
  */
 func displayFunction() {
-	fmt.Println("\n")
 	displayBlockchainStatus()
 	displayCryptocompareStatus()
 	displayCoinmarketcapStatus()
 	displayCryptonatorStatus()
-	fmt.Println("\n")
 }
 
 func displayBlockchainStatus() {
-	//Only print if values differ
-	// if previousValue != sBC.EUR.Recent {
-	previousValue = sBC.EUR.Recent
 	fmt.Println("\nBlockchain status: ")
 	fmt.Printf("€%v", sBC.EUR.Recent)
-	// fmt.Printf("\nCurrent value = %s%v", sBC.EUR.Symbol, sBC.EUR.Recent)
-	// }
 }
 
 func displayCryptocompareStatus() {
@@ -327,5 +323,4 @@ func displayCryptonatorStatus() {
  */
 func main() {
 	loadFunction()
-	displayFunction()
 }
