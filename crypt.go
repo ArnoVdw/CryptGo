@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -214,12 +215,16 @@ type Duration int64
 
 var (
 	//Set Timing variables
-	latestReload  = time.Now()
-	previousValue float64
-	sBC           statusBlockChain
-	sCC           statusCryptoCompare
-	sCMC          statusCoinMarketCap
-	sCN           statusCryptoNator
+	latestReload   = time.Now()
+	previousValue  float64
+	sBC            statusBlockChain
+	sCC            statusCryptoCompare
+	sCMC           statusCoinMarketCap
+	sCN            statusCryptoNator
+	printMagenta   = color.New(color.FgMagenta)
+	printWhite     = color.New(color.FgWhite)
+	printHighBlue  = color.New(color.FgHiBlue)
+	printHighGreen = color.New(color.FgHiGreen)
 )
 
 //Set Constants (Variables that never change)
@@ -292,30 +297,38 @@ DISPLAY
 *Function used to display in the terminal
  */
 func displayFunction() {
+	fmt.Println("\n")
+	printMagenta.Println("\nGetting new Crypto Status")
+	printWhite.Printf("Current time:%v", time.Now())
 	displayBlockchainStatus()
 	displayCryptocompareStatus()
 	displayCoinmarketcapStatus()
 	displayCryptonatorStatus()
+	fmt.Println("\n")
 }
 
 func displayBlockchainStatus() {
-	fmt.Println("\nBlockchain status: ")
-	fmt.Printf("€%v", sBC.EUR.Recent)
+	printHighBlue.Println("\nBlockchain status: ")
+	printHighGreen.Print("€")
+	printHighGreen.Printf("%v", sBC.EUR.Recent)
 }
 
 func displayCryptocompareStatus() {
-	fmt.Println("\nCryptocompare status: ")
-	fmt.Printf("€%v", sCC.EUR)
+	printHighBlue.Println("\nCryptocompare status: ")
+	printHighGreen.Print("€")
+	printHighGreen.Printf("%v", sCC.EUR)
 }
 
 func displayCoinmarketcapStatus() {
-	fmt.Println("\nCoinmarketcap status: ")
-	fmt.Printf("€%v", sCMC[0].PriceEur)
+	printHighBlue.Println("\nCoinmarketcap status: ")
+	printHighGreen.Print("€")
+	printHighGreen.Printf("%v", sCMC[0].PriceEur)
 }
 
 func displayCryptonatorStatus() {
-	fmt.Println("\nCryptonator status: ")
-	fmt.Printf("€%v", sCN.Ticker.Price)
+	printHighBlue.Println("\nCryptonator status: ")
+	printHighGreen.Print("€")
+	printHighGreen.Printf("%v", sCN.Ticker.Price)
 }
 
 /*
