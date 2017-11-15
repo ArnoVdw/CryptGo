@@ -1,12 +1,13 @@
 package main
 
 import (
-	// "database/sql"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
-	// _ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 )
@@ -169,7 +170,7 @@ type statusBlockChain struct {
 }
 
 type statusCryptoCompare struct {
-	// BTC int     `json:"BTC"`
+	BTC int     `json:"BTC"`
 	EUR float64 `json:"EUR"`
 }
 
@@ -227,6 +228,7 @@ var (
 
 	//Color values
 	printMagenta   = color.New(color.FgMagenta)
+	printRed       = color.New(color.FgRed)
 	printWhite     = color.New(color.FgWhite)
 	printHighBlue  = color.New(color.FgHiBlue)
 	printHighGreen = color.New(color.FgHiGreen)
@@ -253,10 +255,31 @@ const (
 	refresTime = time.Second * 15
 )
 
+/*--------------
+Database Loading
+--------------*/
+/*
+*Function used to load in the database
+ */
+func loadDatabase() {
+	printRed.Println("Establishing Database Connection")
+	db, err := sql.Open("mysql",
+		"user:password@tcp(127.0.0.1:3306)/hello")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+}
+
+/*--------------
+Crypto Loading
+--------------*/
+
 /*
 *Function used to load in all the data on launch
  */
-func loadFunction() {
+func loadCrypto() {
 
 	//Set time ticker
 	t := time.NewTicker(refresTime)
@@ -350,7 +373,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 *MAIN FUNCTION
  */
 func main() {
-	go loadFunction()
+	go loadDatabase()
+	go loadCrypto()
 	http.HandleFunc("/", indexHandler)
 	http.ListenAndServe(":3000", nil)
 }
