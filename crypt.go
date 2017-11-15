@@ -1,9 +1,11 @@
 package main
 
 import (
+	// "database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
+	// _ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -167,7 +169,7 @@ type statusBlockChain struct {
 }
 
 type statusCryptoCompare struct {
-	BTC int     `json:"BTC"`
+	// BTC int     `json:"BTC"`
 	EUR float64 `json:"EUR"`
 }
 
@@ -215,12 +217,15 @@ type Duration int64
 
 var (
 	//Set Timing variables
-	latestReload   = time.Now()
-	previousValue  float64
-	sBC            statusBlockChain
-	sCC            statusCryptoCompare
-	sCMC           statusCoinMarketCap
-	sCN            statusCryptoNator
+	latestReload  = time.Now()
+	previousValue float64
+
+	statusBC  statusBlockChain
+	statusCC  statusCryptoCompare
+	statusCMC statusCoinMarketCap
+	statusCN  statusCryptoNator
+
+	//Color values
 	printMagenta   = color.New(color.FgMagenta)
 	printWhite     = color.New(color.FgWhite)
 	printHighBlue  = color.New(color.FgHiBlue)
@@ -238,12 +243,14 @@ const (
 	Minute               = 60 * Second
 	Hour                 = 60 * Minute
 
+	//Api urls
 	urlBC  = "https://blockchain.info/ticker"
 	urlCC  = "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=BTC,EUR"
 	urlCMC = "https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=EUR"
 	urlCN  = "https://api.cryptonator.com/api/full/btc-eur"
 
-	refresTime = time.Second * 1
+	//Iteration time
+	refresTime = time.Second * 15
 )
 
 /*
@@ -251,47 +258,47 @@ const (
  */
 func loadFunction() {
 
-	//Loop resetting, break if enough time has passed & reset variable
+	//Set time ticker
+	t := time.NewTicker(refresTime)
+
+	//Start looping
 	for {
-
-		//Get time passed from latest reload
-		timePassed := time.Now().Sub(latestReload)
-
-		//Reload struct if refreshtime is passed
-		if timePassed > refresTime {
-			//Reset Latest reload
-			latestReload = time.Now()
-			loadAllCryptoStatus()
-			displayFunction()
-		}
+		loadStatusAllCrypto()
+		displayFunction()
+		//When t.C receives, the loop will continue
+		<-t.C
 	}
 }
 
 /*
 *Load all coin stats
  */
-func loadAllCryptoStatus() {
-	json.Unmarshal(getBytesByUrl(urlBC), &sBC)
-	json.Unmarshal(getBytesByUrl(urlCC), &sCC)
-	json.Unmarshal(getBytesByUrl(urlCMC), &sCMC)
-	json.Unmarshal(getBytesByUrl(urlCN), &sCN)
+func loadStatusAllCrypto() {
+	json.Unmarshal(getBytesByUrl(urlBC), &statusBC)
+	json.Unmarshal(getBytesByUrl(urlCC), &statusCC)
+	json.Unmarshal(getBytesByUrl(urlCMC), &statusCMC)
+	json.Unmarshal(getBytesByUrl(urlCN), &statusCN)
 }
 
 /*
 *Gets the bytes for a json url
  */
 func getBytesByUrl(jsonUrl string) []byte {
+
+	//Get respons form url
 	resp, err := http.Get(jsonUrl)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	//Turn json into bytes
 	bytes, _ := ioutil.ReadAll(resp.Body)
 
 	return bytes
 }
 
 /*--------------
-DISPLAY
+TERMINAL DISPLAY
 --------------*/
 /*
 *Function used to display in the terminal
@@ -300,40 +307,50 @@ func displayFunction() {
 	fmt.Println("\n")
 	printMagenta.Println("\nGetting new Crypto Status")
 	printWhite.Printf("Current time:%v", time.Now())
-	displayBlockchainStatus()
-	displayCryptocompareStatus()
-	displayCoinmarketcapStatus()
-	displayCryptonatorStatus()
+	displayStatusBlockchain()
+	displayStatusCryptocompare()
+	displayStatusCoinmarketcap()
+	displayStatusCryptonator()
 	fmt.Println("\n")
 }
 
-func displayBlockchainStatus() {
+func displayStatusBlockchain() {
 	printHighBlue.Println("\nBlockchain status: ")
 	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", sBC.EUR.Recent)
+	printHighGreen.Printf("%v", statusBC.EUR.Recent)
 }
 
-func displayCryptocompareStatus() {
+func displayStatusCryptocompare() {
 	printHighBlue.Println("\nCryptocompare status: ")
 	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", sCC.EUR)
+	printHighGreen.Printf("%v", statusCC.EUR)
 }
 
-func displayCoinmarketcapStatus() {
+func displayStatusCoinmarketcap() {
 	printHighBlue.Println("\nCoinmarketcap status: ")
 	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", sCMC[0].PriceEur)
+	printHighGreen.Printf("%v", statusCMC[0].PriceEur)
 }
 
-func displayCryptonatorStatus() {
+func displayStatusCryptonator() {
 	printHighBlue.Println("\nCryptonator status: ")
 	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", sCN.Ticker.Price)
+	printHighGreen.Printf("%v", statusCN.Ticker.Price)
+}
+
+/*--------------
+WEB DISPLAY
+--------------*/
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "%v", statusBC.EUR.Recent)
 }
 
 /*
 *MAIN FUNCTION
  */
 func main() {
-	loadFunction()
+	go loadFunction()
+	http.HandleFunc("/", indexHandler)
+	http.ListenAndServe(":3000", nil)
 }
