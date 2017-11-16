@@ -7,7 +7,8 @@ import (
 	"github.com/fatih/color"
 	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
-	"log"
+	"text/template"
+	// "log"
 	"net/http"
 	"time"
 )
@@ -253,22 +254,44 @@ const (
 
 	//Iteration time
 	refresTime = time.Second * 15
+
+	//Database
+	dbName string = "cryptGo"
 )
 
 /*--------------
 Database Loading
 --------------*/
+
 /*
 *Function used to load in the database
  */
-func loadDatabase() {
-	printRed.Println("Establishing Database Connection")
-	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/hello")
+func loadDatabase(dbName string) {
+
+	//Establish connection
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	defer db.Close()
+
+	//Create Database
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + dbName)
+	if err != nil {
+		panic(err)
+	}
+
+	//Switch to database
+	_, err = db.Exec("USE " + dbName)
+	if err != nil {
+		panic(err)
+	}
+
+	//Initiate Table creation
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `" + dbName + "`.`users` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
+	if err != nil {
+		panic(err)
+	}
 
 }
 
@@ -365,16 +388,51 @@ func displayStatusCryptonator() {
 WEB DISPLAY
 --------------*/
 
+/*
+*Index page
+ */
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "%v", statusBC.EUR.Recent)
+	t, _ := template.ParseFiles("gtpl/index.gtpl")
+
+	//Printing the error of the template page
+	fmt.Println(t.Execute(w, nil))
+}
+
+/*
+*login page
+ */
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("method:", r.Method) //get request method
+
+	t, _ := template.ParseFiles("gtpl/login.gtpl")
+
+	//Printing the error of the template page
+	fmt.Println(t.Execute(w, nil))
+}
+
+/*
+*Register page
+ */
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	//get request method
+	fmt.Println("method:", r.Method)
+	t, _ := template.ParseFiles("gtpl/register.gtpl")
+
+	//Printing the error of the template page
+	fmt.Println(t.Execute(w, nil))
 }
 
 /*
 *MAIN FUNCTION
  */
 func main() {
-	go loadDatabase()
-	go loadCrypto()
+
+	go loadDatabase(dbName)
+	// go loadCrypto()
+
+	// http loading
 	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/register", registerHandler)
 	http.ListenAndServe(":3000", nil)
 }
