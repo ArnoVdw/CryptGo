@@ -260,6 +260,16 @@ const (
 )
 
 /*--------------
+Helper functions
+--------------*/
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+/*--------------
 Database Loading
 --------------*/
 
@@ -270,28 +280,26 @@ func loadDatabase(dbName string) {
 
 	//Establish connection
 	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 	defer db.Close()
 
 	//Create Database
 	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + dbName)
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 
 	//Switch to database
 	_, err = db.Exec("USE " + dbName)
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 
 	//Initiate Table creation
+
+	//User Table
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `" + dbName + "`.`users` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
+
+	//Crypto Table
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `" + dbName + "`.`crypto` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , `currency` VARCHAR(255) NOT NULL , `amount` VARCHAR(255) NOT NULL  , `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
+	checkErr(err)
 
 }
 
@@ -333,9 +341,7 @@ func getBytesByUrl(jsonUrl string) []byte {
 
 	//Get respons form url
 	resp, err := http.Get(jsonUrl)
-	if err != nil {
-		fmt.Println(err)
-	}
+	checkErr(err)
 
 	//Turn json into bytes
 	bytes, _ := ioutil.ReadAll(resp.Body)
@@ -389,10 +395,34 @@ WEB DISPLAY
 --------------*/
 
 /*
+* Favocin launch handler
+ */
+func handlerICon(w http.ResponseWriter, r *http.Request) {}
+
+/*
 *Index page
  */
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("gtpl/index.gtpl")
+
+	//Establish connection
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
+	checkErr(err)
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM `" + dbName + "`.`crypto` WHERE user_id = 1")
+	checkErr(err)
+
+	for rows.Next() {
+		var id int
+		var user_id int
+		var currency string
+		var amount float64
+		var creation_date string
+		err = rows.Scan(&id, &user_id, &currency, &amount, &creation_date)
+		checkErr(err)
+
+	}
 
 	//Printing the error of the template page
 	fmt.Println(t.Execute(w, nil))
@@ -414,25 +444,67 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 *Register page
  */
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	//get request method
-	fmt.Println("method:", r.Method)
-	t, _ := template.ParseFiles("gtpl/register.gtpl")
 
-	//Printing the error of the template page
-	fmt.Println(t.Execute(w, nil))
+	if r.Method == "GET" {
+		t, _ := template.ParseFiles("gtpl/register.gtpl")
+		fmt.Println(t.Execute(w, nil))
+	} else {
+		r.ParseForm()
+		// logic part of log in
+		fmt.Println("username:", r.Form["username"])
+		fmt.Println("email:", r.Form["email"])
+		fmt.Println("password:", r.Form["password"])
+	}
 }
 
 /*
-*MAIN FUNCTION
+*Crypto page
  */
+func cryptoHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "GET" {
+		t, _ := template.ParseFiles("gtpl/crypto.gtpl")
+		fmt.Println(t.Execute(w, nil))
+	} else {
+		r.ParseForm()
+		// logic part of log in
+		fmt.Println("currency:", r.Form["currency"])
+		fmt.Println("amount:", r.Form["amount"])
+
+		//Establish connection
+		db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
+		checkErr(err)
+		defer db.Close()
+
+		// insert
+		stmt, err := db.Prepare("INSERT `" + dbName + "`.`crypto` SET user_id=?,currency=?,amount=?")
+		checkErr(err)
+
+		res, err := stmt.Exec(1, r.Form["currency"][0], r.Form["amount"][0])
+		checkErr(err)
+
+		id, err := res.LastInsertId()
+		checkErr(err)
+
+		fmt.Println(id)
+
+		http.Redirect(w, r, "/", 301)
+	}
+}
+
+/*--------------
+MAIN FUNCTION
+--------------*/
 func main() {
 
 	go loadDatabase(dbName)
 	// go loadCrypto()
 
 	// http loading
+	http.HandleFunc("/favicon.ico", handlerICon)
 	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/crypto", cryptoHandler)
+	// http.HandleFunc("/login", loginHandler)
+	// http.HandleFunc("/register", registerHandler)
 	http.ListenAndServe(":3000", nil)
 }
