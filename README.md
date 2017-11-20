@@ -6,8 +6,8 @@ A Crypto compare app written in Golang
 * Account creation
 * Link currency to Account
 * Set notifications (price changes, ...)
-* Adding a design/framework
+* Adding a design/boilerplate
 
 ## Currently in progress
 
-* Getting values in structs
+* Displaying values on page

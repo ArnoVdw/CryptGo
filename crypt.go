@@ -13,205 +13,26 @@ import (
 	"time"
 )
 
-type statusBlockChain struct {
-	USD struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"USD"`
-	AUD struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"AUD"`
-	BRL struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"BRL"`
-	CAD struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"CAD"`
-	CHF struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"CHF"`
-	CLP struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"CLP"`
-	CNY struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"CNY"`
-	DKK struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"DKK"`
-	EUR struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"EUR"`
-	GBP struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"GBP"`
-	HKD struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"HKD"`
-	INR struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"INR"`
-	ISK struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"ISK"`
-	JPY struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"JPY"`
-	KRW struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"KRW"`
-	NZD struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"NZD"`
-	PLN struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"PLN"`
-	RUB struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"RUB"`
-	SEK struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"SEK"`
-	SGD struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"SGD"`
-	THB struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"THB"`
-	TWD struct {
-		Recent float64 `json:"15m"`
-		Last   float64 `json:"last"`
-		Buy    float64 `json:"buy"`
-		Sell   float64 `json:"sell"`
-		Symbol string  `json:"symbol"`
-	} `json:"TWD"`
+type statusCoinMarketCapBTC []struct {
+	LastUpdated string `json:"last_updated"`
+	PriceEur    string `json:"price_eur"`
 }
 
-type statusCryptoCompare struct {
-	BTC int     `json:"BTC"`
-	EUR float64 `json:"EUR"`
+type statusCoinMarketCapLTC []struct {
+	LastUpdated string `json:"last_updated"`
+	PriceEur    string `json:"price_eur"`
 }
 
-type statusCoinMarketCap []struct {
-	ID               string `json:"id"`
-	Name             string `json:"name"`
-	Symbol           string `json:"symbol"`
-	Rank             string `json:"rank"`
-	PriceUsd         string `json:"price_usd"`
-	PriceBtc         string `json:"price_btc"`
-	Two4HVolumeUsd   string `json:"24h_volume_usd"`
-	MarketCapUsd     string `json:"market_cap_usd"`
-	AvailableSupply  string `json:"available_supply"`
-	TotalSupply      string `json:"total_supply"`
-	MaxSupply        string `json:"max_supply"`
-	PercentChange1H  string `json:"percent_change_1h"`
-	PercentChange24H string `json:"percent_change_24h"`
-	PercentChange7D  string `json:"percent_change_7d"`
-	LastUpdated      string `json:"last_updated"`
-	PriceEur         string `json:"price_eur"`
-	Two4HVolumeEur   string `json:"24h_volume_eur"`
-	MarketCapEur     string `json:"market_cap_eur"`
+type userCryptoRecord struct {
+	Id           int
+	Amount       float64
+	AddOrDeduct  string
+	CreationDate string
 }
 
-type statusCryptoNator struct {
-	Ticker struct {
-		Base    string `json:"base"`
-		Target  string `json:"target"`
-		Price   string `json:"price"`
-		Volume  string `json:"volume"`
-		Change  string `json:"change"`
-		Markets []struct {
-			Market string  `json:"market"`
-			Price  string  `json:"price"`
-			Volume float64 `json:"volume"`
-		} `json:"markets"`
-	} `json:"ticker"`
-	Timestamp int    `json:"timestamp"`
-	Success   bool   `json:"success"`
-	Error     string `json:"error"`
+type pageVariables struct {
+	Title     string
+	Variables map[string]map[int]userCryptoRecord
 }
 
 //Timing duration
@@ -222,10 +43,8 @@ var (
 	latestReload  = time.Now()
 	previousValue float64
 
-	statusBC  statusBlockChain
-	statusCC  statusCryptoCompare
-	statusCMC statusCoinMarketCap
-	statusCN  statusCryptoNator
+	statusCMCBTC statusCoinMarketCapBTC
+	statusCMCLTC statusCoinMarketCapLTC
 
 	//Color values
 	printMagenta   = color.New(color.FgMagenta)
@@ -233,6 +52,8 @@ var (
 	printWhite     = color.New(color.FgWhite)
 	printHighBlue  = color.New(color.FgHiBlue)
 	printHighGreen = color.New(color.FgHiGreen)
+
+	userCryptoRecords = map[string]map[int]userCryptoRecord{}
 )
 
 //Set Constants (Variables that never change)
@@ -246,14 +67,12 @@ const (
 	Minute               = 60 * Second
 	Hour                 = 60 * Minute
 
-	//Api urls
-	urlBC  = "https://blockchain.info/ticker"
-	urlCC  = "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=BTC,EUR"
-	urlCMC = "https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=EUR"
-	urlCN  = "https://api.cryptonator.com/api/full/btc-eur"
+	//Urls
+	urlCMCBTC = "https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=EUR"
+	urlCMCLTC = "https://api.coinmarketcap.com/v1/ticker/litecoin/?convert=EUR"
 
 	//Iteration time
-	refresTime = time.Second * 15
+	refresTime = time.Second * 180
 
 	//Database
 	dbName string = "cryptGo"
@@ -298,7 +117,7 @@ func loadDatabase(dbName string) {
 	checkErr(err)
 
 	//Crypto Table
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `" + dbName + "`.`crypto` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , `currency` VARCHAR(255) NOT NULL , `amount` VARCHAR(255) NOT NULL  , `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `" + dbName + "`.`crypto` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , `addOrDeduct` VARCHAR(1) NOT NULL,  `currency` VARCHAR(255) NOT NULL , `amount` VARCHAR(255) NOT NULL  , `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
 	checkErr(err)
 
 }
@@ -328,10 +147,8 @@ func loadCrypto() {
 *Load all coin stats
  */
 func loadStatusAllCrypto() {
-	json.Unmarshal(getBytesByUrl(urlBC), &statusBC)
-	json.Unmarshal(getBytesByUrl(urlCC), &statusCC)
-	json.Unmarshal(getBytesByUrl(urlCMC), &statusCMC)
-	json.Unmarshal(getBytesByUrl(urlCN), &statusCN)
+	json.Unmarshal(getBytesByUrl(urlCMCBTC), &statusCMCBTC)
+	json.Unmarshal(getBytesByUrl(urlCMCLTC), &statusCMCLTC)
 }
 
 /*
@@ -349,6 +166,41 @@ func getBytesByUrl(jsonUrl string) []byte {
 	return bytes
 }
 
+/*
+*Function used to load in a particulary users currency status
+ */
+func loadUserCrypto(userId int) {
+
+	//Establish connection
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
+	checkErr(err)
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM `"+dbName+"`.`crypto` WHERE user_id = ?", userId)
+	checkErr(err)
+
+	for rows.Next() {
+		var id int
+		var user_id int
+		var currency string
+		var addOrDeduct string
+		var amount float64
+		var creation_date string
+		err = rows.Scan(&id, &user_id, &addOrDeduct, &currency, &amount, &creation_date)
+		checkErr(err)
+
+		cUR := userCryptoRecord{Id: id, Amount: amount, AddOrDeduct: addOrDeduct, CreationDate: creation_date}
+
+		//Reinitialize the map when this isn't declared yet
+		if len(userCryptoRecords[currency]) == 0 {
+			userCryptoRecords[currency] = map[int]userCryptoRecord{}
+		}
+
+		userCryptoRecords[currency][id] = cUR
+
+	}
+}
+
 /*--------------
 TERMINAL DISPLAY
 --------------*/
@@ -359,35 +211,18 @@ func displayFunction() {
 	fmt.Println("\n")
 	printMagenta.Println("\nGetting new Crypto Status")
 	printWhite.Printf("Current time:%v", time.Now())
-	displayStatusBlockchain()
-	displayStatusCryptocompare()
 	displayStatusCoinmarketcap()
-	displayStatusCryptonator()
 	fmt.Println("\n")
 }
 
-func displayStatusBlockchain() {
-	printHighBlue.Println("\nBlockchain status: ")
-	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", statusBC.EUR.Recent)
-}
-
-func displayStatusCryptocompare() {
-	printHighBlue.Println("\nCryptocompare status: ")
-	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", statusCC.EUR)
-}
-
 func displayStatusCoinmarketcap() {
-	printHighBlue.Println("\nCoinmarketcap status: ")
+	printHighBlue.Println("\nCoinmarketcap status BTC: ")
 	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", statusCMC[0].PriceEur)
-}
+	printHighGreen.Printf("%v", statusCMCBTC[0].PriceEur)
 
-func displayStatusCryptonator() {
-	printHighBlue.Println("\nCryptonator status: ")
+	printHighBlue.Println("\nCoinmarketcap status LTC: ")
 	printHighGreen.Print("€")
-	printHighGreen.Printf("%v", statusCN.Ticker.Price)
+	printHighGreen.Printf("%v", statusCMCLTC[0].PriceEur)
 }
 
 /*--------------
@@ -402,74 +237,37 @@ func handlerICon(w http.ResponseWriter, r *http.Request) {}
 /*
 *Index page
  */
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func indexPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("html/index.html")
 
-	//Establish connection
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
-	checkErr(err)
-	defer db.Close()
-
-	rows, err := db.Query("SELECT * FROM `" + dbName + "`.`crypto` WHERE user_id = 1")
-	checkErr(err)
-
-	for rows.Next() {
-		var id int
-		var user_id int
-		var currency string
-		var amount float64
-		var creation_date string
-		err = rows.Scan(&id, &user_id, &currency, &amount, &creation_date)
-		checkErr(err)
-
-	}
-
 	//Printing the error of the template page
 	fmt.Println(t.Execute(w, nil))
 }
 
 /*
-*login page
+*transactions page
  */
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method) //get request method
+func transactionsPageHandler(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("html/transactions.html")
 
-	t, _ := template.ParseFiles("html/login.html")
+	loadUserCrypto(1)
+
+	p := pageVariables{Title: "transactions", Variables: userCryptoRecords}
 
 	//Printing the error of the template page
-	fmt.Println(t.Execute(w, nil))
-}
-
-/*
-*Register page
- */
-func registerHandler(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == "GET" {
-		t, _ := template.ParseFiles("html/register.html")
-		fmt.Println(t.Execute(w, nil))
-	} else {
-		r.ParseForm()
-		// logic part of log in
-		fmt.Println("username:", r.Form["username"])
-		fmt.Println("email:", r.Form["email"])
-		fmt.Println("password:", r.Form["password"])
-	}
+	fmt.Println(t.Execute(w, p))
 }
 
 /*
 *Crypto page
  */
-func cryptoHandler(w http.ResponseWriter, r *http.Request) {
+func transactionsNewPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("html/crypto.html")
+		t, _ := template.ParseFiles("html/new_transaction.html")
 		fmt.Println(t.Execute(w, nil))
 	} else {
 		r.ParseForm()
-		// logic part of log in
-		fmt.Println("currency:", r.Form["currency"])
-		fmt.Println("amount:", r.Form["amount"])
 
 		//Establish connection
 		db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
@@ -477,10 +275,10 @@ func cryptoHandler(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// insert
-		stmt, err := db.Prepare("INSERT `" + dbName + "`.`crypto` SET user_id=?,currency=?,amount=?")
+		stmt, err := db.Prepare("INSERT `" + dbName + "`.`crypto` SET user_id=?,addOrDeduct=? ,currency=?,amount=?")
 		checkErr(err)
 
-		res, err := stmt.Exec(1, r.Form["currency"][0], r.Form["amount"][0])
+		res, err := stmt.Exec(1, r.Form["addOrDeduct"][0], r.Form["currency"][0], r.Form["amount"][0])
 		checkErr(err)
 
 		id, err := res.LastInsertId()
@@ -497,14 +295,13 @@ MAIN FUNCTION
 --------------*/
 func main() {
 
+	// Function only needed on first launch
 	go loadDatabase(dbName)
-	// go loadCrypto()
 
 	// http loading
 	http.HandleFunc("/favicon.ico", handlerICon)
-	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/crypto", cryptoHandler)
-	// http.HandleFunc("/login", loginHandler)
-	// http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/", indexPageHandler)
+	http.HandleFunc("/transactions", transactionsPageHandler)
+	http.HandleFunc("/transactions/new", transactionsNewPageHandler)
 	http.ListenAndServe(":3000", nil)
 }

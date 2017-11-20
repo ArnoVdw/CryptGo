@@ -1,0 +1,23 @@
+<html>
+    <head>
+    <title></title>
+    </head>
+    <body>
+    	<li><a href="/">Home</a></li>
+      <form action="/transactions/new" method="post">
+	        <select name="addOrDeduct" required>
+          	<option value="">+/-</option>
+      			<option value="+">+</option>
+      			<option value="-">-</option>
+      		</select>
+      		<select name="currency" required>
+      			<option value="">Choose Currency</option>
+      			<option value="BTC">Bitcoin</option>
+      			<option value="LTC">Litecoin</option>
+      		</select>
+          <!-- Currency:<input type="text" name="currency"> -->
+          <input type="text" name="amount" placeholder="Amount">
+          <input type="submit" value="Submit">
+      </form>
+    </body>
+</html>

@@ -1,0 +1,18 @@
+<html>
+    <head>
+    <title></title>
+    </head>
+    <body>
+    	<ul>
+    		<li><a href="/">Home</a></li>
+    		<li><a href="/transactions">Transactions</a></li>
+    		<li><a href="/transactions/new">New transaction</a></li>
+    		{{ range $key, $value := .Variables}}
+    		<h2>{{$key}}</h2>
+    			{{ range $subkey, $Subvalue := $value}}
+	    		<p>{{.AddOrDeduct}}{{.Amount}} {{$key}} - {{.CreationDate}}</p>
+					{{ end }}
+				{{ end }}
+    	</ul>
+    </body>
+</html>
