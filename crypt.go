@@ -403,7 +403,7 @@ func handlerICon(w http.ResponseWriter, r *http.Request) {}
 *Index page
  */
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("gtpl/index.gtpl")
+	t, _ := template.ParseFiles("html/index.html")
 
 	//Establish connection
 	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/")
@@ -434,7 +434,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) //get request method
 
-	t, _ := template.ParseFiles("gtpl/login.gtpl")
+	t, _ := template.ParseFiles("html/login.html")
 
 	//Printing the error of the template page
 	fmt.Println(t.Execute(w, nil))
@@ -446,7 +446,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("gtpl/register.gtpl")
+		t, _ := template.ParseFiles("html/register.html")
 		fmt.Println(t.Execute(w, nil))
 	} else {
 		r.ParseForm()
@@ -463,7 +463,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 func cryptoHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("gtpl/crypto.gtpl")
+		t, _ := template.ParseFiles("html/crypto.html")
 		fmt.Println(t.Execute(w, nil))
 	} else {
 		r.ParseForm()
