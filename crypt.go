@@ -7,18 +7,12 @@ import (
 	"github.com/fatih/color"
 	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
-	"text/template"
-	// "log"
 	"net/http"
+	"text/template"
 	"time"
 )
 
-type statusCoinMarketCapBTC []struct {
-	LastUpdated string `json:"last_updated"`
-	PriceEur    string `json:"price_eur"`
-}
-
-type statusCoinMarketCapLTC []struct {
+type statusCoinMarketCap []struct {
 	LastUpdated string `json:"last_updated"`
 	PriceEur    string `json:"price_eur"`
 }
@@ -26,7 +20,7 @@ type statusCoinMarketCapLTC []struct {
 type userCryptoRecord struct {
 	Id           int
 	Amount       float64
-	AddOrDeduct  string
+	PlusOrMinus  string
 	CreationDate string
 }
 
@@ -43,8 +37,8 @@ var (
 	latestReload  = time.Now()
 	previousValue float64
 
-	statusCMCBTC statusCoinMarketCapBTC
-	statusCMCLTC statusCoinMarketCapLTC
+	statusCMCBTC statusCoinMarketCap
+	statusCMCLTC statusCoinMarketCap
 
 	//Color values
 	printMagenta   = color.New(color.FgMagenta)
@@ -117,7 +111,7 @@ func loadDatabase(dbName string) {
 	checkErr(err)
 
 	//Crypto Table
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `" + dbName + "`.`crypto` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , `addOrDeduct` VARCHAR(1) NOT NULL,  `currency` VARCHAR(255) NOT NULL , `amount` VARCHAR(255) NOT NULL  , `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `" + dbName + "`.`crypto` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , `plus_or_minus` VARCHAR(1) NOT NULL,  `currency` VARCHAR(255) NOT NULL , `amount` VARCHAR(255) NOT NULL  , `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
 	checkErr(err)
 
 }
@@ -182,14 +176,14 @@ func loadUserCrypto(userId int) {
 	for rows.Next() {
 		var id int
 		var user_id int
+		var plus_or_minus string
 		var currency string
-		var addOrDeduct string
 		var amount float64
 		var creation_date string
-		err = rows.Scan(&id, &user_id, &addOrDeduct, &currency, &amount, &creation_date)
+		err = rows.Scan(&id, &user_id, &plus_or_minus, &currency, &amount, &creation_date)
 		checkErr(err)
 
-		cUR := userCryptoRecord{Id: id, Amount: amount, AddOrDeduct: addOrDeduct, CreationDate: creation_date}
+		cUR := userCryptoRecord{Id: id, Amount: amount, PlusOrMinus: plus_or_minus, CreationDate: creation_date}
 
 		//Reinitialize the map when this isn't declared yet
 		if len(userCryptoRecords[currency]) == 0 {
@@ -250,7 +244,9 @@ func indexPageHandler(w http.ResponseWriter, r *http.Request) {
 func transactionsPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("html/transactions.html")
 
-	loadUserCrypto(1)
+	userId := 1
+
+	loadUserCrypto(userId)
 
 	p := pageVariables{Title: "transactions", Variables: userCryptoRecords}
 
@@ -275,10 +271,10 @@ func transactionsNewPageHandler(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// insert
-		stmt, err := db.Prepare("INSERT `" + dbName + "`.`crypto` SET user_id=?,addOrDeduct=? ,currency=?,amount=?")
+		stmt, err := db.Prepare("INSERT `" + dbName + "`.`crypto` SET user_id=?,plus_or_minus=? ,currency=?,amount=?")
 		checkErr(err)
 
-		res, err := stmt.Exec(1, r.Form["addOrDeduct"][0], r.Form["currency"][0], r.Form["amount"][0])
+		res, err := stmt.Exec(1, r.Form["PlusOrMinus"][0], r.Form["currency"][0], r.Form["amount"][0])
 		checkErr(err)
 
 		id, err := res.LastInsertId()
@@ -297,6 +293,8 @@ func main() {
 
 	// Function only needed on first launch
 	go loadDatabase(dbName)
+
+	go loadCrypto()
 
 	// http loading
 	http.HandleFunc("/favicon.ico", handlerICon)

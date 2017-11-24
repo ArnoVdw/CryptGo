@@ -10,7 +10,7 @@
     		{{ range $key, $value := .Variables}}
     		<h2>{{$key}}</h2>
     			{{ range $subkey, $Subvalue := $value}}
-	    		<p>{{.AddOrDeduct}}{{.Amount}} {{$key}} - {{.CreationDate}}</p>
+	    		<p>{{.PlusOrMinus}}{{.Amount}} {{$key}} - {{.CreationDate}}</p>
 					{{ end }}
 				{{ end }}
     	</ul>
